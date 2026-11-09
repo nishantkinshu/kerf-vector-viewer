@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.tadaaprojects.kerf'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.tadaaprojects.kerf'
+        minSdk 24          // Android 7.0 and newer
+        targetSdk 34
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger())   // goes up by 1 with every GitHub build
+        versionName "1.0.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+    }
+
+    // One fixed key, kept in this folder, so every new build installs as an update
+    // over the old one instead of asking you to uninstall first.
+    // If kerf-debug.keystore is missing, Android's normal test key is used instead
+    // (then each new build may ask you to uninstall the old app first).
+    def fixedKey = file('kerf-debug.keystore')
+    signingConfigs {
+        if (fixedKey.exists()) debug {
+            storeFile file('kerf-debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

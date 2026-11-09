@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A sheet of material with a cut path through it: the kerf. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:strokeColor="#C9CDD2" android:strokeWidth="3" android:fillColor="#00000000"
+        android:pathData="M36,32 L72,32 Q76,32 76,36 L76,72 Q76,76 72,76 L36,76 Q32,76 32,72 L32,36 Q32,32 36,32 Z" />
+    <path android:strokeColor="#F0A03C" android:strokeWidth="3.4" android:fillColor="#00000000" android:strokeLineCap="round"
+        android:pathData="M48,47 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0" />
+    <path android:strokeColor="#F0A03C" android:strokeWidth="3.4" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M40,66 L58,66 L66,58 L66,42" />
+</vector>

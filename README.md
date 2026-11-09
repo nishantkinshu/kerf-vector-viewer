@@ -52,9 +52,11 @@ The app's signing key is kept out of this repository. It is stored as a private 
 - **App icon**: `app/src/main/res/drawable/ic_launcher_foreground.xml` and the `mipmap-*` folders.
 - **Version number**: goes up by itself with every GitHub build (see `app/build.gradle`).
 
-## Licences
+## Licence
 
-- DWG reading uses **LibreDWG** (via libredwg-web 0.7.17), which is under the **GPL-3.0** licence. Using the app yourself is fine. If you ever share or sell the app to others, GPL means you must also share this project's source code, for example by making the GitHub repository public. Before you do that, swap the keystore for a new one.
+Kerf is open source under the **GNU General Public License v3.0** (see [LICENSE](LICENSE)). You may use, change and share it; anyone who shares a changed version must also share its source code under the same licence.
+
+- DWG reading uses **LibreDWG** (via libredwg-web 0.7.17, GPL-3.0), which is why Kerf uses the GPL too.
 - DXF reading uses **dxf-parser** (MIT licence).
 - The fonts are Barlow and JetBrains Mono (SIL Open Font Licence).
 

@@ -1,0 +1,104 @@
+name: Build apps
+
+on:
+  push:
+  workflow_dispatch:
+
+# Lets the build publish the apps on the repo's "Releases" page
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Android app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Copy viewer page into the app
+        run: python3 tools/build_web.py
+
+      # The app's signing key lives in the repository secret KERF_KEYSTORE (kept private, never in the code).
+      # With it, every build is signed the same way, so new APKs install over old ones as updates.
+      - name: Restore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KERF_KEYSTORE }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then echo "$KEYSTORE_B64" | base64 -d > app/kerf-debug.keystore; echo "Signing key restored"; else echo "No KERF_KEYSTORE secret: using a temporary key"; fi
+
+      - name: Build the APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Name the APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk out/Kerf-Android-1.0.${{ github.run_number }}.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kerf-Android
+          path: out/*.apk
+
+  windows:
+    name: Windows app
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Copy viewer page into the Windows app
+        shell: bash
+        run: |
+          python tools/build_web.py
+          rm -rf desktop/www
+          cp -r app/src/main/assets/www desktop/www
+
+      - name: Build the Windows installer and portable app
+        shell: bash
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          npm install --no-audit --no-fund
+          npm version "1.0.${{ github.run_number }}" --no-git-tag-version --allow-same-version
+          npx electron-builder --win --publish never
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kerf-Windows
+          path: desktop/dist/Kerf-Windows-*.exe
+
+  release:
+    name: Publish on the Releases page
+    needs: [android, windows]
+    # The Android app is still published if only the Windows build has a problem.
+    if: ${{ !cancelled() && needs.android.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Kerf 1.0.${{ github.run_number }}
+          body: |
+            Built automatically from the latest code. Download the file for your device:
+
+            - **Android phone or tablet:** `Kerf-Android-1.0.${{ github.run_number }}.apk`. Open it on the device and tap Install.
+            - **Windows (install):** `Kerf-Windows-Setup-1.0.${{ github.run_number }}.exe`. Adds Kerf to the Start menu and desktop, and to "Open with" for DXF, DWG, SVG and G-code files.
+            - **Windows (no install):** `Kerf-Windows-Portable-1.0.${{ github.run_number }}.exe`. Runs straight away from any folder or USB stick; starts a little slower.
+          files: out/*
+          make_latest: true

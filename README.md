@@ -1,6 +1,6 @@
 # Kerf Vector Viewer
 
-A simple Android app for phones and tablets to look at 2D drawings and CNC files.
+A simple app for Android phones, tablets and Windows PCs to look at 2D drawings and CNC files.
 
 ## What it opens
 
@@ -25,21 +25,25 @@ Files that Kerf can't open (CorelDRAW .cdr, Illustrator .ai, PDF, EPS) get a mes
 - Made for phones and tablets, upright or sideways. On tablets and sideways phones the details and settings open as side panels, so the drawing stays visible.
 - Works fully offline. Needs Android 7.0 or newer.
 
-## Getting the APK (the installable app file)
+## Getting the apps
 
-### Way 1: GitHub builds it for you (already set up)
-
-Every time code in this repository changes, GitHub builds a fresh APK by itself (takes about 3 minutes).
+Every time code in this repository changes, GitHub builds the Android app and the Windows app by itself. This takes about 5–8 minutes.
 
 1. Open the **Releases** page of this repository (right side of the main page, or `/releases`).
-2. Under the newest **Kerf build N**, tap **Kerf-build-N.apk** to download it.
-3. Open the APK on your phone or tablet. Android will ask to allow installing apps from that source; allow it and tap **Install**.
+2. Under the newest **Kerf 1.0.N**, download the file for your device:
+   - **Android phone or tablet:** `Kerf-Android-1.0.N.apk`. Open it on the device; Android will ask to allow installing apps from that source; allow it and tap **Install**.
+   - **Windows, installed:** `Kerf-Windows-Setup-1.0.N.exe`. Run it and follow the steps. It adds Kerf to the Start menu and desktop, and to **Open with** (right-click a file in File Explorer) for DXF, DWG, SVG and G-code files. Your current default program for those files is not changed.
+   - **Windows, no install:** `Kerf-Windows-Portable-1.0.N.exe`. Double-click to run from any folder or USB stick. It starts a little slower because it unpacks itself each time.
 
-To build again without changing anything: **Actions** tab → **Build APK** → **Run workflow**.
+Windows may show a blue **"Windows protected your PC"** box the first time, because the app isn't signed with a paid certificate. Click **More info → Run anyway**.
 
-The app's signing key is kept out of this repository. It is stored as a private GitHub secret named `KERF_KEYSTORE` (Settings → Secrets and variables → Actions). With that secret set, every build is signed the same way, so a new APK installs over the old one as an update. Without it, Android may ask you to uninstall the old version first.
+On Windows: **Ctrl+O** opens a file, **F11** is full screen, **Esc** closes panels, and you can drag a file onto the window.
 
-### Way 2: Android Studio on your laptop
+To build again without changing anything: **Actions** tab → **Build apps** → **Run workflow**.
+
+The Android app's signing key is kept out of this repository. It is stored as a private GitHub secret named `KERF_KEYSTORE` (Settings → Secrets and variables → Actions). With it, every build is signed the same way, so a new APK installs over the old one as an update.
+
+### Optional: build the Android app yourself with Android Studio
 
 1. Install Android Studio from developer.android.com/studio.
 2. **File → Open** and choose this folder. Wait for "Gradle sync" to finish (10–20 minutes the first time).
@@ -68,6 +72,7 @@ web/lib/dxf-parser.js     DXF reader
 web/lib/libredwg/         DWG reader (JavaScript + WebAssembly, about 11 MB)
 web/fonts/                fonts, so the app works offline
 app/src/main/...          the Android wrapper around the viewer
+desktop/                  the Windows wrapper (Electron): main.js, installer settings, icon
 tools/build_web.py        copies the viewer into the Android app
-.github/workflows/        instructions GitHub follows to build the APK
+.github/workflows/        instructions GitHub follows to build the Android and Windows apps
 ```

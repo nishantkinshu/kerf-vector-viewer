@@ -1,0 +1,60 @@
+{
+  "name": "kerf",
+  "productName": "Kerf",
+  "version": "1.0.0",
+  "description": "Kerf vector viewer (DXF, DWG, SVG, G-code) for Windows",
+  "author": "Nishant",
+  "license": "GPL-3.0-only",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.9.0",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "com.tadaaprojects.kerf",
+    "productName": "Kerf",
+    "copyright": "Copyright © 2026 Nishant",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "www/**/*"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Kerf",
+      "include": "build/installer.nsh",
+      "artifactName": "Kerf-Windows-Setup-${version}.exe"
+    },
+    "portable": {
+      "artifactName": "Kerf-Windows-Portable-${version}.exe"
+    }
+  }
+}

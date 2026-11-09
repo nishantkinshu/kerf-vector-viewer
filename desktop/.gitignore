@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# copied in from app/src/main/assets/www by the build
+www/

@@ -10,8 +10,8 @@ android {
         applicationId 'com.tadaaprojects.kerf'
         minSdk 24          // Android 7.0 and newer
         targetSdk 34
-        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger())   // goes up by 1 with every GitHub build
-        versionName "1.0.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        versionCode((System.getenv('BUILD_NUMBER') ?: '1').toInteger())   // goes up with every GitHub build (set in .github/workflows)
+        versionName "1.0.${System.getenv('BUILD_NUMBER') ?: '0'}"
     }
 
     // One fixed key, kept in this folder, so every new build installs as an update

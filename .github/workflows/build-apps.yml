@@ -40,10 +40,22 @@ jobs:
         run: |
           if [ -n "$KEYSTORE_B64" ]; then echo "$KEYSTORE_B64" | base64 -d > app/kerf-debug.keystore; echo "Signing key restored"; else echo "No KERF_KEYSTORE secret: using a temporary key"; fi
 
+      # Keep Gradle's downloads between builds, so a slow day at GitHub doesn't stop the build.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', '**/*.gradle') }}
+
       - name: Build the APK
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          for try in 1 2 3; do
+            ./gradlew assembleDebug --no-daemon && break
+            if [ "$try" = 3 ]; then exit 1; fi
+            echo "Build tools did not download properly; trying again in 30 seconds"; sleep 30
+          done
 
       - name: Name the APK
         run: |
@@ -76,6 +88,14 @@ jobs:
           rm -rf desktop/www
           cp -r app/src/main/assets/www desktop/www
 
+      # Keep Electron and installer-tool downloads between builds.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/AppData/Local/electron/Cache
+            ~/AppData/Local/electron-builder/Cache
+          key: electron-${{ hashFiles('desktop/package.json') }}
+
       - name: Build the Windows installer and portable app
         shell: bash
         working-directory: desktop
@@ -84,7 +104,11 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npm version "1.0.$BUILD_NUMBER" --no-git-tag-version --allow-same-version
-          npx electron-builder --win --publish never
+          for try in 1 2 3; do
+            npx electron-builder --win --publish never && break
+            if [ "$try" = 3 ]; then exit 1; fi
+            echo "Build tools did not download properly; trying again in 30 seconds"; sleep 30
+          done
 
       - uses: actions/upload-artifact@v4
         with:
